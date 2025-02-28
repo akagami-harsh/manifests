@@ -63,7 +63,6 @@ fi
 
 ISTIOCTL=$SRC_DIR/istio-${COMMIT}/bin/istioctl
 cd $ISTIO_NEW
-$ISTIOCTL profile dump default > profile.yaml
 
 # cd $ISTIO_NEW
 # export PATH="$MANIFESTS_DIR/scripts:$PATH"

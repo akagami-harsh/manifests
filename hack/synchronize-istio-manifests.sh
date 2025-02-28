@@ -63,9 +63,6 @@ fi
 ISTIOCTL=$SRC_DIR/istio-${COMMIT}/bin/istioctl
 cd $ISTIO_NEW
 
-# Remove the profile generation since we already have a profile.yaml
-# $ISTIOCTL manifest generate --set profile=default > profile.yaml
-
 # Generate manifest directly using existing profile.yaml and overlay
 $ISTIOCTL manifest generate -f profile.yaml -f profile-overlay.yaml > dump.yaml
 ./split-istio-packages -f dump.yaml
