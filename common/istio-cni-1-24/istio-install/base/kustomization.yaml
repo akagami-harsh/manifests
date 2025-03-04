@@ -17,4 +17,9 @@ patches:
 - path: patches/istiod-remove-pdb.yaml
 # - path: patches/seccomp-istio-ingressgateway.yaml
 - path: patches/seccomp-istiod.yaml
-- path: patches/update-busybox-image.yaml
+
+# Alternative approach using images transformation
+images:
+- name: busybox
+  newName: registry.k8s.io/busybox
+  newTag: "1.28"
