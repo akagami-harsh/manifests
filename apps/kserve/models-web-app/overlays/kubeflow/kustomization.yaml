@@ -41,3 +41,11 @@ patches:
     namespace: kserve
     version: v1beta1
 - path: patches/web-app-sidecar.yaml
+- path: patches/security-context.yaml
+  target:
+    group: apps
+    kind: Deployment
+    name: kserve-models-web-app
+    namespace: kserve
+    version: v1
+  
