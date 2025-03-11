@@ -6,17 +6,5 @@ spec:
   template:
     spec:
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
         seccompProfile:
           type: RuntimeDefault
-      containers:
-        - name: kserve-models-web-app
-          securityContext:
-            seccompProfile:
-              type: RuntimeDefault
-            runAsNonRoot: true
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
