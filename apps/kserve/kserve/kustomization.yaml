@@ -4,3 +4,6 @@ resources:
   # Install Kserve in kubeflow namespace
   - kserve_kubeflow.yaml
   - kserve-cluster-resources.yaml
+
+patches:
+- path: patches/security-context.yaml

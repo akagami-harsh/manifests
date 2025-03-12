@@ -10,4 +10,4 @@ resources:
 
 patches:
 - path: patches/remove-pdb.yaml
-- path: seccomp-patch.yaml
+- path: patches/seccomp-patch.yaml

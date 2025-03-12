@@ -2,9 +2,17 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kserve-models-web-app
+  namespace: kserve
 spec:
   template:
     spec:
       securityContext:
+        runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
+      containers:
+      - name: kserve-models-web-app
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]

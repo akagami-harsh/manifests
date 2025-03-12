@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: kserve-controller-manager
+    control-plane: kserve-controller-manager
+    controller-tools.k8s.io: "1.0"
+  name: kserve-controller-manager
+  namespace: kubeflow
+spec:
+  template:
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: manager
+        securityContext:
+          allowPrivilegeEscalation: false 
+          capabilities:
+            drop: ["ALL"]
+          runAsNonRoot: true
+          runAsUser: 1000
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kserve-localmodel-controller-manager
+  namespace: kubeflow
+spec:
+  template:
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: manager
+      - securityContext:
+          allowPrivilegeEscalation: false 
+          capabilities:
+            drop: ["ALL"]
+          runAsNonRoot: true
+          runAsUser: 1000
+
+
