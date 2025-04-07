@@ -1,0 +1,191 @@
+{{- if .Values.rbac.create -}}
+
+# Cluster role for training operator
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "training-operator.fullname" . }}
+  labels:
+    {{- include "training-operator.labels" . | nindent 4 }}
+rules:
+  - apiGroups:
+      - kubeflow.org
+    resources:
+      - mpijobs
+      - tfjobs
+      - pytorchjobs
+      - xgboostjobs
+      - paddlejobs
+      - jaxjobs
+    verbs:
+      - '*'
+  - apiGroups:
+      - kubeflow.org
+    resources:
+      - mpijobs/status
+      - tfjobs/status
+      - pytorchjobs/status
+      - xgboostjobs/status
+      - paddlejobs/status
+      - jaxjobs/status
+    verbs:
+      - '*'
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - services
+      - endpoints
+      - events
+      - configmaps
+      - secrets
+      - serviceaccounts
+    verbs:
+      - '*'
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+    verbs:
+      - '*'
+  - apiGroups:
+      - batch
+    resources:
+      - jobs
+    verbs:
+      - '*'
+  - apiGroups:
+      - coordination.k8s.io
+    resources:
+      - leases
+    verbs:
+      - '*'
+  - apiGroups:
+      - admissionregistration.k8s.io
+    resources:
+      - mutatingwebhookconfigurations
+      - validatingwebhookconfigurations
+    verbs:
+      - '*'
+---
+# Cluster role binding for training operator
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "training-operator.fullname" . }}
+  labels:
+    {{- include "training-operator.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "training-operator.fullname" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "training-operator.serviceAccountName" . }}
+    namespace: {{ .Values.namespace | default .Release.Namespace }}
+---
+# Kubeflow training admin role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kubeflow-training-admin
+  labels:
+    {{- include "training-operator.labels" . | nindent 4 }}
+    rbac.authorization.kubeflow.org/aggregate-to-kubeflow-admin: "true"
+aggregationRule:
+  clusterRoleSelectors:
+    - matchLabels:
+        rbac.authorization.kubeflow.org/aggregate-to-kubeflow-training-admin: "true"
+rules: []
+---
+# Kubeflow training edit role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kubeflow-training-edit
+  labels:
+    {{- include "training-operator.labels" . | nindent 4 }}
+    rbac.authorization.kubeflow.org/aggregate-to-kubeflow-edit: "true"
+    rbac.authorization.kubeflow.org/aggregate-to-kubeflow-training-admin: "true"
+rules:
+  - apiGroups:
+      - kubeflow.org
+    resources:
+      - mpijobs
+      - tfjobs
+      - pytorchjobs
+      - xgboostjobs
+      - paddlejobs
+      - jaxjobs
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - kubeflow.org
+    resources:
+      - mpijobs/status
+      - tfjobs/status
+      - pytorchjobs/status
+      - xgboostjobs/status
+      - paddlejobs/status
+      - jaxjobs/status
+    verbs:
+      - get
+  - apiGroups:
+      - ""
+    resources:
+      - persistentvolumeclaims
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs:
+      - get
+      - list
+      - watch
+---
+# Kubeflow training view role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kubeflow-training-view
+  labels:
+    {{- include "training-operator.labels" . | nindent 4 }}
+    rbac.authorization.kubeflow.org/aggregate-to-kubeflow-view: "true"
+rules:
+  - apiGroups:
+      - kubeflow.org
+    resources:
+      - mpijobs
+      - tfjobs
+      - pytorchjobs
+      - xgboostjobs
+      - paddlejobs
+      - jaxjobs
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - kubeflow.org
+    resources:
+      - mpijobs/status
+      - tfjobs/status
+      - pytorchjobs/status
+      - xgboostjobs/status
+      - paddlejobs/status
+      - jaxjobs/status
+    verbs:
+      - get
+{{- end }} 

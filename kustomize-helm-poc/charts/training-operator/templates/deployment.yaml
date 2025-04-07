@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "training-operator.fullname" . }}
+  namespace: {{ .Values.namespace | default .Release.Namespace }}
+  labels:
+    {{- include "training-operator.labels" . | nindent 4 }}
+    control-plane: kubeflow-training-operator
+  {{- with .Values.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "training-operator.selectorLabels" . | nindent 6 }}
+      control-plane: kubeflow-training-operator
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        {{- include "training-operator.selectorLabels" . | nindent 8 }}
+        control-plane: kubeflow-training-operator
+      annotations:
+        sidecar.istio.io/inject: "false"
+    spec:
+      containers:
+        - command:
+            - /manager
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          name: training-operator
+          ports:
+            - containerPort: 8080
+            - containerPort: 9443
+              name: webhook-server
+              protocol: TCP
+          env:
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          securityContext:
+            allowPrivilegeEscalation: false
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /tmp/k8s-webhook-server/serving-certs
+              name: cert
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8081
+            {{- toYaml .Values.healthProbe.livenessProbe | nindent 12 }}
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8081
+            {{- toYaml .Values.healthProbe.readinessProbe | nindent 12 }}
+      serviceAccountName: {{ include "training-operator.serviceAccountName" . }}
+      terminationGracePeriodSeconds: 10
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: cert
+          secret:
+            defaultMode: 420
+            secretName: {{ include "training-operator.fullname" . }}-webhook-cert 

@@ -1,0 +1,79 @@
+# Default values for training-operator
+nameOverride: ""
+fullnameOverride: ""
+
+# Namespace for the training operator installation
+# If not set, the release namespace will be used
+namespace: ""
+
+# Image configuration
+image:
+  repository: kubeflow/training-operator
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# Service configuration
+service:
+  type: ClusterIP
+  annotations: {}
+
+# Resource limits and requests
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+# Annotations to apply to all resources
+annotations: {}
+
+# Labels to apply to all resources
+labels: {}
+
+# Pod Security Context
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+# Service account configuration
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+
+# RBAC configuration
+rbac:
+  create: true
+
+# Custom CRDs configuration
+# If enabled, the chart will apply the CRDs during the installation
+crds:
+  create: true
+  apiVersion: kubeflow.org/v1
+  kinds:
+    - TFJob
+    - PyTorchJob
+    - MXNetJob
+    - XGBoostJob
+    - MPIJob
+
+# Health probe configuration
+healthProbe:
+  livenessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  readinessProbe:
+    initialDelaySeconds: 10
+    periodSeconds: 10
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity
+affinity: {} 
