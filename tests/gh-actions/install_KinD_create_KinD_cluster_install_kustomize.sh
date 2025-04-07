@@ -17,14 +17,14 @@ case "$K8S_VERSION" in
   "v1.32.2")
     K8S_SHA256="f226345927d7e348497136874b6d207e0b32cc52154ad8323129352923a3142f"
     ;;
-  "v1.29.2")
-    K8S_SHA256="51a1434a5397193442f0be2a297b488b6c919ce8a3931be0ce822606ea5ca245"
+  "v1.31.6")
+    K8S_SHA256="28b7cbb993dfe093c76641a0c95807637213c9109b761f1d422c2400e22b8e87"
     ;;
-  "v1.28.6")
-    K8S_SHA256="6b77ae5a50d4420b4f16e8d9af893c0f4f3b6f66a3b2f4e5eb2e4c5e2dc20e1f"
+  "v1.30.10")
+    K8S_SHA256="4de75d0e82481ea846c0ed1de86328d821c1e6a6a91ac37bf804e5313670e507"
     ;;
-  "v1.27.10")
-    K8S_SHA256="7f9fc9b8c8a18e6e2c9613c4e3f1004b4cf9d6208f8c2f9e2d196c5a6e4bda89"
+  "v1.29.14")
+    K8S_SHA256="8703bd94ee24e51b778d5556ae310c6c0fa67d761fae6379c8e0bb480e6fea29"
     ;;
   *)
     echo "Warning: SHA256 hash not found for version $K8S_VERSION. Using version without SHA256 verification."
