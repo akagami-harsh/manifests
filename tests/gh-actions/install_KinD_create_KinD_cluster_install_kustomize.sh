@@ -8,6 +8,29 @@ error_exit() {
 
 trap 'error_exit $LINENO' ERR
 
+# Check if a Kubernetes version is provided as an argument
+K8S_VERSION=${1:-"v1.32.2"}
+K8S_SHA256=""
+
+# Map of known K8s versions to their SHA256 hashes
+case "$K8S_VERSION" in
+  "v1.32.2")
+    K8S_SHA256="f226345927d7e348497136874b6d207e0b32cc52154ad8323129352923a3142f"
+    ;;
+  "v1.29.2")
+    K8S_SHA256="51a1434a5397193442f0be2a297b488b6c919ce8a3931be0ce822606ea5ca245"
+    ;;
+  "v1.28.6")
+    K8S_SHA256="6b77ae5a50d4420b4f16e8d9af893c0f4f3b6f66a3b2f4e5eb2e4c5e2dc20e1f"
+    ;;
+  "v1.27.10")
+    K8S_SHA256="7f9fc9b8c8a18e6e2c9613c4e3f1004b4cf9d6208f8c2f9e2d196c5a6e4bda89"
+    ;;
+  *)
+    echo "Warning: SHA256 hash not found for version $K8S_VERSION. Using version without SHA256 verification."
+    ;;
+esac
+
 echo "Install KinD..."
 sudo swapoff -a
 
@@ -26,7 +49,15 @@ fi
 } || { echo "Failed to install KinD"; exit 1; }
 
 
-echo "Creating KinD cluster ..."
+echo "Creating KinD cluster with Kubernetes version $K8S_VERSION ..."
+
+NODE_IMAGE="kindest/node:$K8S_VERSION"
+if [ -n "$K8S_SHA256" ]; then
+  NODE_IMAGE="$NODE_IMAGE@sha256:$K8S_SHA256"
+fi
+
+echo "Using node image: $NODE_IMAGE"
+
 echo "
 apiVersion: kind.x-k8s.io/v1alpha4
 kind: Cluster
@@ -49,11 +80,11 @@ kubeadmConfigPatches:
         \"service-account-signing-key-file\": \"/etc/kubernetes/pki/sa.key\"
 nodes:
 - role: control-plane
-  image: kindest/node:v1.32.2@sha256:f226345927d7e348497136874b6d207e0b32cc52154ad8323129352923a3142f
+  image: $NODE_IMAGE
 - role: worker
-  image: kindest/node:v1.32.2@sha256:f226345927d7e348497136874b6d207e0b32cc52154ad8323129352923a3142f
+  image: $NODE_IMAGE
 - role: worker
-  image: kindest/node:v1.32.2@sha256:f226345927d7e348497136874b6d207e0b32cc52154ad8323129352923a3142f
+  image: $NODE_IMAGE
 " | kind create cluster --config -
 
 
