@@ -7,3 +7,6 @@ resources:
 - seaweedfs-pvc.yaml
 - seaweedfs-service.yaml
 - seadweedfs-networkpolicy.yaml
+
+patchesStrategicMerge:
+- patches/seaweedfs-volume-limit.yaml
