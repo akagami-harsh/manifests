@@ -27,7 +27,7 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-
+    
     - name: Install KinD, Create KinD cluster and Install kustomize
       run: ./tests/install_KinD_create_KinD_cluster_install_kustomize.sh
 
@@ -71,6 +71,11 @@ jobs:
 
     - name: Port forward
       run: ./tests/port_forward_gateway.sh
+
+    - name: Install lib2to3
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-lib2to3
 
     - name: V1 Pipeline Test
       run: |
