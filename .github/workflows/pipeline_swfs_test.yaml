@@ -85,7 +85,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y python3-lib2to3
-        
+
     - name: List and deploy test pipeline with V1 API
       run: |
         pip3 install "kfp>=1.8.23,<2.0.0"
